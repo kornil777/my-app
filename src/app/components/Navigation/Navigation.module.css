@@ -37,10 +37,12 @@
 .navMenu {
   display: block;
   visibility: visible;
+  
 }
 
 .menuList {
   padding: 18px 0 10px 0;
+   list-style: none;
 }
 
 .menuItem {

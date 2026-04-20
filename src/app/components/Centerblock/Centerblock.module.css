@@ -32,11 +32,7 @@
 }
 
 .searchText::placeholder {
-  background-color: transparent;
   color: #ffffff;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
 }
 
 .centerblockH2 {
@@ -83,9 +79,8 @@
 
 .contentTitle {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   margin-bottom: 24px;
+  gap: 16px;
 }
 
 .playlistTitleCol {
@@ -104,105 +99,7 @@
   stroke: #696969;
 }
 
-.col01 { width: 447px; }
-.col02 { width: 321px; }
-.col03 { width: 245px; }
-.col04 { width: 60px; text-align: end; }
-
-.contentPlaylist {
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-}
-
-.playlistItem {
-  width: 100%;
-  display: block;
-  margin-bottom: 12px;
-}
-
-.playlistTrack {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.trackTitle {
-  display: flex;
-  align-items: center;
-  width: 447px;
-}
-
-.trackTitleImage {
-  width: 51px;
-  height: 51px;
-  padding: 16px;
-  background: #313131;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 17px;
-}
-
-.trackTitleSvg {
-  width: 18px;
-  height: 17px;
-  fill: transparent;
-  stroke: #4e4e4e;
-}
-
-.trackTitleLink {
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
-  color: #ffffff;
-}
-
-.trackTitleSpan {
-  color: #4e4e4e;
-}
-
-.trackAuthor {
-  width: 321px;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.trackAuthorLink {
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
-  color: #ffffff;
-}
-
-.trackAlbum {
-  width: 245px;
-}
-
-.trackAlbumLink {
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
-  color: #696969;
-}
-
-.trackTime {
-  display: flex;
-  align-items: center;
-}
-
-.trackTimeSvg {
-  width: 14px;
-  height: 12px;
-  margin-right: 17px;
-  fill: transparent;
-  stroke: #696969;
-}
-
-.trackTimeText {
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
-  text-align: right;
-  color: #696969;
-}
+.col01 { flex: 4; }
+.col02 { flex: 3; }
+.col03 { flex: 2; }
+.col04 { flex: 1; text-align: end; }
