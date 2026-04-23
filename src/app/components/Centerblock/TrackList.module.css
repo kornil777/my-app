@@ -3,3 +3,10 @@
   flex-direction: column;
   overflow-y: auto;
 }
+
+.noTracks {
+  text-align: center;
+  color: #696969;
+  padding: 40px;
+  font-size: 18px;
+}
