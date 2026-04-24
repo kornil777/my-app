@@ -2,14 +2,20 @@ import Link from 'next/link';
 import styles from './TrackItem.module.css';
 
 interface TrackItemProps {
-  title: string;
+  name: string;
   author: string;
   album: string;
-  duration: string;
-  subtitle?: string;
+  duration_in_seconds: number;
+  _id: number;
 }
 
-export default function TrackItem({ title, author, album, duration, subtitle }: TrackItemProps) {
+const formatDuration = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+};
+
+export default function TrackItem({ name, author, album, duration_in_seconds, _id }: TrackItemProps) {
   return (
     <div className={styles.playlistItem}>
       <div className={styles.playlistTrack}>
@@ -21,8 +27,7 @@ export default function TrackItem({ title, author, album, duration, subtitle }: 
           </div>
           <div>
             <Link href="#" className={styles.trackTitleLink}>
-              {title}{' '}
-              {subtitle && <span className={styles.trackTitleSpan}>{subtitle}</span>}
+              {name}
             </Link>
           </div>
         </div>
@@ -40,7 +45,7 @@ export default function TrackItem({ title, author, album, duration, subtitle }: 
           <svg className={styles.trackTimeSvg}>
             <use href="/img/icon/sprite.svg#icon-like" />
           </svg>
-          <span className={styles.trackTimeText}>{duration}</span>
+          <span className={styles.trackTimeText}>{formatDuration(duration_in_seconds)}</span>
         </div>
       </div>
     </div>
