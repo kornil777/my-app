@@ -1,46 +1,49 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { data } from '@/app/data' // путь к вашему data.ts
+import { useAppDispatch, useAppSelector } from '@/store/store';
+import { setPlaylist } from '@/store/features/trackSlice';
+import { TrackType } from '@/sharedTypes/types';
+import { data } from '@/app/data';
 import TrackList from './TrackList';
 import styles from './Centerblock.module.css';
 
-interface Track {
-  _id: number;
-  name: string;
-  author: string;
-  release_date: string;
-  genre: string[];
-  duration_in_seconds: number;
-  album: string;
-  logo: string | null;
-  track_file: string;
-  stared_user: string[];
-}
-
-// Получаем уникальных авторов
-const getUniqueAuthors = (tracks: Track[]) => {
-  const authors = tracks.map(track => track.author);
+// Функции для получения уникальных значений
+const getUniqueAuthors = (tracks: TrackType[]) => {
+  const authors = tracks.map((track) => track.author);
   return [...new Set(authors)];
 };
 
-// Получаем уникальные жанры
-const getUniqueGenres = (tracks: Track[]) => {
-  const genres = tracks.flatMap(track => track.genre);
+const getUniqueGenres = (tracks: TrackType[]) => {
+  const genres = tracks.flatMap((track) => track.genre);
   return [...new Set(genres)];
 };
 
-// Фильтрация треков по автору и жанру
-const filterTracks = (tracks: Track[], selectedAuthor: string | null, selectedGenre: string | null) => {
-  return tracks.filter(track => {
+// Фильтрация треков
+const filterTracks = (
+  tracks: TrackType[],
+  selectedAuthor: string | null,
+  selectedGenre: string | null,
+  searchQuery: string
+) => {
+  return tracks.filter((track) => {
     if (selectedAuthor && track.author !== selectedAuthor) return false;
     if (selectedGenre && !track.genre.includes(selectedGenre)) return false;
+    if (
+      searchQuery &&
+      !track.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      !track.author.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+      return false;
     return true;
   });
 };
 
-// Сортировка по году (release_date)
-const sortTracksByYear = (tracks: Track[], sortOrder: 'default' | 'newest' | 'oldest') => {
+// Сортировка по году выпуска
+const sortTracksByYear = (
+  tracks: TrackType[],
+  sortOrder: 'default' | 'newest' | 'oldest'
+) => {
   if (sortOrder === 'default') return tracks;
   const sorted = [...tracks].sort((a, b) => {
     const dateA = new Date(a.release_date).getTime();
@@ -51,24 +54,30 @@ const sortTracksByYear = (tracks: Track[], sortOrder: 'default' | 'newest' | 'ol
 };
 
 export default function Centerblock() {
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [filteredTracks, setFilteredTracks] = useState<Track[]>([]);
+  const dispatch = useAppDispatch();
+  const playlist = useAppSelector((state) => state.tracks.playlist);
+
+  const [filteredTracks, setFilteredTracks] = useState<TrackType[]>([]);
   const [openFilter, setOpenFilter] = useState<'author' | 'year' | 'genre' | null>(null);
   const [selectedAuthor, setSelectedAuthor] = useState<string | null>(null);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<'default' | 'newest' | 'oldest'>('default');
+  const [searchQuery, setSearchQuery] = useState('');
 
+  // Загружаем данные в хранилище при монтировании
   useEffect(() => {
-    // Загружаем данные из моков
-    setTracks(data as Track[]);
-  }, []);
+    if (playlist.length === 0) {
+      dispatch(setPlaylist(data as TrackType[]));
+    }
+  }, [dispatch, playlist.length]);
 
+  // Применяем фильтры и сортировку при изменении зависимостей
   useEffect(() => {
-    let result = [...tracks];
-    result = filterTracks(result, selectedAuthor, selectedGenre);
+    let result = [...playlist];
+    result = filterTracks(result, selectedAuthor, selectedGenre, searchQuery);
     result = sortTracksByYear(result, sortOrder);
     setFilteredTracks(result);
-  }, [tracks, selectedAuthor, selectedGenre, sortOrder]);
+  }, [playlist, selectedAuthor, selectedGenre, sortOrder, searchQuery]);
 
   const toggleFilter = (filter: 'author' | 'year' | 'genre') => {
     setOpenFilter(openFilter === filter ? null : filter);
@@ -93,13 +102,15 @@ export default function Centerblock() {
     setSelectedAuthor(null);
     setSelectedGenre(null);
     setSortOrder('default');
+    setSearchQuery('');
   };
 
-  const uniqueAuthors = getUniqueAuthors(tracks);
-  const uniqueGenres = getUniqueGenres(tracks);
+  const uniqueAuthors = getUniqueAuthors(playlist);
+  const uniqueGenres = getUniqueGenres(playlist);
 
   return (
     <div className={styles.centerblock}>
+      {/* Поиск */}
       <div className={styles.centerblockSearch}>
         <svg className={styles.searchSvg}>
           <use href="/img/icon/sprite.svg#icon-search" />
@@ -109,11 +120,18 @@ export default function Centerblock() {
           type="search"
           placeholder="Поиск"
           name="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
+
       <h2 className={styles.centerblockH2}>Треки</h2>
+
+      {/* Фильтры */}
       <div className={styles.centerblockFilter}>
         <div className={styles.filterTitle}>Искать по:</div>
+
+        {/* Фильтр по исполнителю */}
         <div className={styles.filterWrapper}>
           <button
             className={`${styles.filterButton} ${selectedAuthor ? styles.filterButtonActive : ''}`}
@@ -123,10 +141,12 @@ export default function Centerblock() {
           </button>
           {openFilter === 'author' && (
             <div className={styles.dropdown}>
-              {uniqueAuthors.map(author => (
+              {uniqueAuthors.map((author) => (
                 <div
                   key={author}
-                  className={`${styles.dropdownItem} ${selectedAuthor === author ? styles.active : ''}`}
+                  className={`${styles.dropdownItem} ${
+                    selectedAuthor === author ? styles.active : ''
+                  }`}
                   onClick={() => handleSelectAuthor(author)}
                 >
                   {author}
@@ -136,6 +156,7 @@ export default function Centerblock() {
           )}
         </div>
 
+        {/* Фильтр по году выпуска */}
         <div className={styles.filterWrapper}>
           <button
             className={`${styles.filterButton} ${sortOrder !== 'default' ? styles.filterButtonActive : ''}`}
@@ -161,6 +182,7 @@ export default function Centerblock() {
           )}
         </div>
 
+        {/* Фильтр по жанру */}
         <div className={styles.filterWrapper}>
           <button
             className={`${styles.filterButton} ${selectedGenre ? styles.filterButtonActive : ''}`}
@@ -170,10 +192,12 @@ export default function Centerblock() {
           </button>
           {openFilter === 'genre' && (
             <div className={styles.dropdown}>
-              {uniqueGenres.map(genre => (
+              {uniqueGenres.map((genre) => (
                 <div
                   key={genre}
-                  className={`${styles.dropdownItem} ${selectedGenre === genre ? styles.active : ''}`}
+                  className={`${styles.dropdownItem} ${
+                    selectedGenre === genre ? styles.active : ''
+                  }`}
                   onClick={() => handleSelectGenre(genre)}
                 >
                   {genre}
@@ -183,13 +207,15 @@ export default function Centerblock() {
           )}
         </div>
 
-        {(selectedAuthor || selectedGenre || sortOrder !== 'default') && (
+        {/* Кнопка сброса */}
+        {(selectedAuthor || selectedGenre || sortOrder !== 'default' || searchQuery) && (
           <button className={styles.resetButton} onClick={resetFilters}>
             Сбросить фильтры
           </button>
         )}
       </div>
 
+      {/* Заголовки колонок */}
       <div className={styles.centerblockContent}>
         <div className={styles.contentTitle}>
           <div className={`${styles.playlistTitleCol} ${styles.col01}`}>Трек</div>
@@ -201,6 +227,8 @@ export default function Centerblock() {
             </svg>
           </div>
         </div>
+
+        {/* Список треков */}
         <TrackList tracks={filteredTracks} />
       </div>
     </div>

@@ -1,6 +1,6 @@
 .styledProgressInput {
    --progress-height: 5px;
-   --progress-color: #b672ff;
+   --progress-color: white;
    --progress-bg-color: #2e2e2e;
 
    margin: 0;

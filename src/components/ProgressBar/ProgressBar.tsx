@@ -1,5 +1,6 @@
-import styles from './progressBar.module.css';
+
 import { ChangeEvent } from 'react';
+import styles from './ProgressBar.module.css';
 
 type progressBarProp = {
    max: number;

@@ -6,6 +6,7 @@ import { setCurrentTrack } from '@/store/features/trackSlice';
 import { TrackType } from '@/sharedTypes/types';          
 import styles from './TrackItem.module.css';
 
+
 interface TrackItemProps extends TrackType {}
 
 const formatDuration = (seconds: number) => {
@@ -20,8 +21,8 @@ export default function TrackItem(track: TrackItemProps) {
   const isActive = currentTrack?._id === track._id && isPlaying;
 
   const handleClick = () => {
-    dispatch(setCurrentTrack(track));   
-  };
+  dispatch(setCurrentTrack(track)); 
+};
 
   return (
     <div className={`${styles.playlistItem} ${isActive ? styles.activeTrack : ''}`} onClick={handleClick}>
