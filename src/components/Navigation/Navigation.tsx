@@ -6,7 +6,7 @@ import { useState } from 'react';
 import styles from './Navigation.module.css';
 
 const menuItems = [
-  { label: 'Главное', href: '/' },
+  { label: 'Главное', href: '/music/main' },
   { label: 'Мой плейлист', href: '/playlist' },
   { label: 'Войти', href: '/signin' },
 ];
