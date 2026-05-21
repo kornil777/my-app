@@ -1,35 +1,41 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useAppDispatch, useAppSelector } from '@/store/store';
+import { signUpUser } from '@/store/features/userSlice';
 import styles from './signup.module.css';
 
 export default function SignUp() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { isLoading, error } = useAppSelector((state) => state.user);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState<string[]>([]);
+  const [username, setUsername] = useState('');
+  const [localError, setLocalError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors([]);
-
-    if (!email || !password || !confirmPassword) {
-      setErrors(['Заполните все поля']);
+    setLocalError('');
+    if (!email || !password || !confirmPassword || !username) {
+      setLocalError('Заполните все поля');
       return;
     }
     if (password !== confirmPassword) {
-      setErrors(['Пароли не совпадают']);
+      setLocalError('Пароли не совпадают');
       return;
     }
     if (password.length < 6) {
-      setErrors(['Пароль должен быть не менее 6 символов']);
+      setLocalError('Пароль должен быть не менее 6 символов');
       return;
     }
-    // TODO: подключить API регистрации
-    router.push('/signin');
+    const result = await dispatch(signUpUser({ email, password, username }));
+    if (result.meta.requestStatus === 'fulfilled') {
+      router.push('/signin');
+    }
   };
 
   return (
@@ -40,6 +46,13 @@ export default function SignUp() {
             <img src="/img/logo_modal.png" alt="logo" />
           </div>
         </Link>
+        <input
+          className={styles.modal__input}
+          type="text"
+          placeholder="Имя пользователя"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
         <input
           className={styles.modal__input}
           type="email"
@@ -61,15 +74,13 @@ export default function SignUp() {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        {errors.length > 0 && (
+        {(localError || error) && (
           <div className={styles.errorContainer}>
-            {errors.map((err, idx) => (
-              <span key={idx}>{err}</span>
-            ))}
+            <span>{localError || error}</span>
           </div>
         )}
-        <button type="submit" className={styles.modal__btnSignupEnt}>
-          Зарегистрироваться
+        <button type="submit" className={styles.modal__btnSignupEnt} disabled={isLoading}>
+          {isLoading ? 'Регистрация...' : 'Зарегистрироваться'}
         </button>
         <Link
           href="/signin"

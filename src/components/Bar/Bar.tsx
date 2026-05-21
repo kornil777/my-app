@@ -26,29 +26,59 @@ export default function Bar() {
 
   // Загрузка трека при смене currentTrack
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !currentTrack) return;
+  const audio = audioRef.current;
+  if (!audio || !currentTrack) return;
 
+  let isMounted = true;
+  audio.pause();
+  audio.src = currentTrack.track_file;
+  audio.load();
+  audio.volume = volume;
+
+  if (isPlaying && isMounted) {
+    audio.play().catch((err) => {
+      if (err.name !== 'AbortError') console.error('Play error:', err);
+    });
+  }
+
+  return () => {
+    isMounted = false;
     audio.pause();
-    audio.src = currentTrack.track_file;
-    audio.load();
-    audio.volume = volume;
+  };
+}, [currentTrack]);
 
-    if (isPlaying) {
-      audio.play().catch((err) => console.warn('Play blocked:', err));
-    }
-  }, [currentTrack]);
 
   // Синхронизация play/pause
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !currentTrack) return;
-    if (isPlaying) {
-      audio.play().catch((err) => console.warn('Play error:', err));
-    } else {
+  const audio = audioRef.current;
+  if (!audio || !currentTrack) return;
+
+  // Флаг, что компонент всё ещё смонтирован
+  let isMounted = true;
+
+  const handlePlay = async () => {
+    if (isPlaying && isMounted) {
+      try {
+        await audio.play();
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.error('Play error:', err);
+        }
+      }
+    } else if (!isPlaying && isMounted) {
       audio.pause();
     }
-  }, [isPlaying, currentTrack]);
+  };
+  
+
+  handlePlay();
+
+  return () => {
+    isMounted = false;
+    // При размонтировании останавливаем аудио, чтобы не было лишних вызовов
+    audio.pause();
+  };
+}, [isPlaying, currentTrack]);
 
   // Синхронизация громкости
   useEffect(() => {
@@ -104,9 +134,7 @@ export default function Bar() {
     setVolume(Number(e.target.value));
   };
 
-  if (!currentTrack) {
-    return <div className={styles.bar}></div>;
-  }
+  
 
   return (
     <div className={styles.bar}>
@@ -169,12 +197,12 @@ export default function Bar() {
                 </div>
                 <div className={styles.trackPlayAuthor}>
                   <Link href="#" className={styles.trackPlayAuthorLink}>
-                    {currentTrack.name}
+                    {currentTrack?.name ?? ''}
                   </Link>
                 </div>
                 <div className={styles.trackPlayAlbum}>
                   <Link href="#" className={styles.trackPlayAlbumLink}>
-                    {currentTrack.author}
+                    {currentTrack?.author ?? ''}
                   </Link>
                 </div>
               </div>

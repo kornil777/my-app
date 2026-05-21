@@ -1,25 +1,31 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useAppDispatch, useAppSelector } from '@/store/store';
+import { loginUser } from '@/store/features/userSlice';
 import styles from './signin.module.css';
 
 export default function Signin() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { isLoading, error } = useAppSelector((state) => state.user);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<string[]>([]);
+  const [localError, setLocalError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors([]);
+    setLocalError('');
     if (!email || !password) {
-      setErrors(['Заполните все поля']);
+      setLocalError('Заполните все поля');
       return;
     }
-    // TODO: подключить API авторизации
-    router.push('/');
+    const result = await dispatch(loginUser({ email, password }));
+    if (result.meta.requestStatus === 'fulfilled') {
+      router.push('/music/main');
+    }
   };
 
   return (
@@ -44,15 +50,13 @@ export default function Signin() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {errors.length > 0 && (
+        {(localError || error) && (
           <div className={styles.errorContainer}>
-            {errors.map((err, idx) => (
-              <span key={idx}>{err}</span>
-            ))}
+            <span>{localError || error}</span>
           </div>
         )}
-        <button type="submit" className={styles.modal__btnEnter}>
-          Войти
+        <button type="submit" className={styles.modal__btnEnter} disabled={isLoading}>
+          {isLoading ? 'Вход...' : 'Войти'}
         </button>
         <Link href="/signup" className={styles.modal__btnSignup}>
           Зарегистрироваться

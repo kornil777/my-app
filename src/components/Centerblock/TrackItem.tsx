@@ -1,28 +1,30 @@
+// components/Centerblock/TrackItem.tsx
 'use client';
 
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { setCurrentTrack } from '@/store/features/trackSlice';
-import { TrackType } from '@/sharedTypes/types';          
+import { TrackType } from '@/sharedTypes/types';
 import styles from './TrackItem.module.css';
 
-
-interface TrackItemProps extends TrackType {}
-
-const formatDuration = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+// Безопасное форматирование времени
+const formatDuration = (seconds?: number) => {
+  if (!seconds || isNaN(seconds)) return '0:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 };
 
-export default function TrackItem(track: TrackItemProps) {
+export default function TrackItem(track: TrackType) {
   const dispatch = useAppDispatch();
   const { currentTrack, isPlaying } = useAppSelector((state) => state.tracks);
   const isActive = currentTrack?._id === track._id && isPlaying;
 
   const handleClick = () => {
-  dispatch(setCurrentTrack(track)); 
+    dispatch(setCurrentTrack(track));
+  
 };
+
 
   return (
     <div className={`${styles.playlistItem} ${isActive ? styles.activeTrack : ''}`} onClick={handleClick}>
@@ -39,18 +41,18 @@ export default function TrackItem(track: TrackItemProps) {
           </div>
           <div>
             <Link href="#" className={styles.trackTitleLink}>
-              {track.name}
+              {track.name || 'Без названия'}
             </Link>
           </div>
         </div>
         <div className={styles.trackAuthor}>
           <Link href="#" className={styles.trackAuthorLink}>
-            {track.author}
+            {track.author || 'Неизвестный исполнитель'}
           </Link>
         </div>
         <div className={styles.trackAlbum}>
           <Link href="#" className={styles.trackAlbumLink}>
-            {track.album}
+            {track.album || '—'}
           </Link>
         </div>
         <div className={styles.trackTime}>

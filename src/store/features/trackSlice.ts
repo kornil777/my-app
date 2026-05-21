@@ -1,14 +1,17 @@
 // store/features/trackSlice.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction  } from '@reduxjs/toolkit';
+import { getAllTracks } from '@/lib/api';
 import { TrackType } from '@/sharedTypes/types';
 
 interface TracksState {
-  playlist: TrackType[];            // весь плейлист
-  currentTrack: TrackType | null;   // текущий трек (дубль)
-  currentTrackIndex: number;        // индекс текущего трека
+  playlist: TrackType[];
+  currentTrack: TrackType | null;
+  currentTrackIndex: number;
   isPlaying: boolean;
-  shuffle: boolean;                 // режим перемешивания
-  loop: boolean;                    // зацикливание одного трека
+  shuffle: boolean;
+  loop: boolean;
+  isLoading: boolean;
+  error: string | null;
 }
 
 const initialState: TracksState = {
@@ -18,23 +21,29 @@ const initialState: TracksState = {
   isPlaying: false,
   shuffle: false,
   loop: false,
+  isLoading: false,
+  error: null,
 };
+
+export const fetchTracks = createAsyncThunk('tracks/fetchTracks', async () => {
+  const response = await getAllTracks();
+  // API может возвращать массив треков в поле data или напрямую массив
+  return response.data || response;
+});
 
 const trackSlice = createSlice({
   name: 'tracks',
   initialState,
   reducers: {
-    setPlaylist: (state, action: PayloadAction<TrackType[]>) => {
+    setPlaylist: (state, action) => {
       state.playlist = action.payload;
     },
     setCurrentTrack: (state, action: PayloadAction<TrackType>) => {
-      const index = state.playlist.findIndex(t => t._id === action.payload._id);
-      if (index !== -1) {
-        state.currentTrackIndex = index;
-        state.currentTrack = action.payload;
-        state.isPlaying = true;
-      }
-    },
+  const index = state.playlist.findIndex(t => t._id === action.payload._id);
+  state.currentTrackIndex = index !== -1 ? index : -1;
+  state.currentTrack = action.payload;
+  state.isPlaying = true;
+},
     setCurrentTrackByIndex: (state, action: PayloadAction<number>) => {
       const index = action.payload;
       if (state.playlist[index]) {
@@ -96,16 +105,27 @@ prevTrack: (state) => {
   }
 },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTracks.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchTracks.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.playlist = action.payload;
+        // если плейлист не пуст и нет текущего трека, можно установить первый трек (по желанию)
+        if (state.playlist.length > 0 && !state.currentTrack) {
+          state.currentTrack = state.playlist[0];
+          state.currentTrackIndex = 0;
+        }
+      })
+      .addCase(fetchTracks.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Ошибка загрузки треков';
+      });
+  },
 });
 
-export const {
-  setPlaylist,
-  setCurrentTrack,
-  setCurrentTrackByIndex,
-  setIsPlaying,
-  setShuffle,
-  setLoop,
-  nextTrack,
-  prevTrack,
-} = trackSlice.actions;
+export const { setPlaylist, setCurrentTrack, nextTrack, prevTrack, setIsPlaying, setShuffle, setLoop } = trackSlice.actions;
 export const trackSliceReducer = trackSlice.reducer;

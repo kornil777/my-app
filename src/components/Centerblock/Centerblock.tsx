@@ -7,6 +7,10 @@ import { TrackType } from '@/sharedTypes/types';
 import { data } from '@/app/data';
 import TrackList from './TrackList';
 import styles from './Centerblock.module.css';
+import { fetchTracks } from '@/store/features/trackSlice';
+import TrackItem from './TrackItem';
+
+
 
 // Функции для получения уникальных значений
 const getUniqueAuthors = (tracks: TrackType[]) => {
@@ -55,7 +59,7 @@ const sortTracksByYear = (
 
 export default function Centerblock() {
   const dispatch = useAppDispatch();
-  const playlist = useAppSelector((state) => state.tracks.playlist);
+  const { playlist, isLoading, error } = useAppSelector((state) => state.tracks);
 
   const [filteredTracks, setFilteredTracks] = useState<TrackType[]>([]);
   const [openFilter, setOpenFilter] = useState<'author' | 'year' | 'genre' | null>(null);
@@ -64,12 +68,11 @@ export default function Centerblock() {
   const [sortOrder, setSortOrder] = useState<'default' | 'newest' | 'oldest'>('default');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Загружаем данные в хранилище при монтировании
-  useEffect(() => {
-    if (playlist.length === 0) {
-      dispatch(setPlaylist(data as TrackType[]));
+   useEffect(() => {
+    if (playlist.length === 0 && !isLoading) {
+      dispatch(fetchTracks());
     }
-  }, [dispatch, playlist.length]);
+  }, [dispatch, playlist.length, isLoading]);
 
   // Применяем фильтры и сортировку при изменении зависимостей
   useEffect(() => {
@@ -107,9 +110,11 @@ export default function Centerblock() {
 
   const uniqueAuthors = getUniqueAuthors(playlist);
   const uniqueGenres = getUniqueGenres(playlist);
+    if (isLoading) return <div className={styles.loader}>Загрузка треков...</div>;
+  if (error) return <div className={styles.error}>Ошибка: {error}</div>;
 
   return (
-    <div className={styles.centerblock}>
+   <div className={styles.centerblock}>
       {/* Поиск */}
       <div className={styles.centerblockSearch}>
         <svg className={styles.searchSvg}>
