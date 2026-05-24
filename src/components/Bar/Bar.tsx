@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/store/store';
 import { setIsPlaying, nextTrack, prevTrack, setShuffle, setLoop } from '@/store/features/trackSlice';
 import ProgressBar from '@/components/ProgressBar/ProgressBar'; // компонент из задания
 import styles from './Bar.module.css';
+import { useLikeTrack } from '@/hooks/useLikeTrack';
 
 const formatTime = (seconds: number) => {
   if (isNaN(seconds)) return '0:00';
@@ -23,6 +24,7 @@ export default function Bar() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.5);
+  const { isLike, toggleLike, isLoading: isLikeLoading } = useLikeTrack(currentTrack);
 
   // Загрузка трека при смене currentTrack
   useEffect(() => {
@@ -133,6 +135,14 @@ export default function Bar() {
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVolume(Number(e.target.value));
   };
+   const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (currentTrack) toggleLike();
+  };
+
+  if (!currentTrack) {
+    return <div className={styles.bar}></div>;
+  }
 
   
 
@@ -197,26 +207,34 @@ export default function Bar() {
                 </div>
                 <div className={styles.trackPlayAuthor}>
                   <Link href="#" className={styles.trackPlayAuthorLink}>
-                    {currentTrack?.name ?? ''}
+                    {currentTrack.name}
                   </Link>
                 </div>
                 <div className={styles.trackPlayAlbum}>
                   <Link href="#" className={styles.trackPlayAlbumLink}>
-                    {currentTrack?.author ?? ''}
+                    {currentTrack.author}
                   </Link>
                 </div>
               </div>
-              <div className={styles.trackPlayDislike}>
-                <div className="btnIcon">
+
+              {/* Блок лайков в плеере */}
+              <div className={styles.trackPlayLikeDis}>
+                <div
+                  className={`${styles.trackPlayLike} btnIcon ${isLike ? styles.liked : ''}`}
+                  onClick={handleLikeClick}
+                >
                   <svg className={styles.trackPlayLikeSvg}>
                     <use href="/img/icon/sprite.svg#icon-like" />
                   </svg>
                 </div>
-                <div className="btnIcon">
+                {/* <div
+                  className={`${styles.trackPlayDislike} btnIcon`}
+                  onClick={handleLikeClick}
+                >
                   <svg className={styles.trackPlayDislikeSvg}>
                     <use href="/img/icon/sprite.svg#icon-dislike" />
                   </svg>
-                </div>
+                </div> */}
               </div>
             </div>
 

@@ -24,12 +24,14 @@
   height: 73px;
   display: flex;
   justify-content: space-between;
+  background-color: black;
 }
 
 .barPlayer {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  row-gap: 30px;
 }
 
 .barVolumeBlock {
@@ -70,6 +72,8 @@
 
 .playerTrackPlay {
   display: flex;
+  column-gap: 25px;
+  align-items: center;
 }
 
 .trackPlayContain {
@@ -238,4 +242,19 @@
   background: white;
   border-radius: 50%;
   cursor: pointer;
+}
+
+.trackPlayLike.liked svg {
+  fill: #b672ff;
+  stroke: #b672ff;
+}
+
+.trackPlayLike,
+.trackPlayDislike {
+  cursor: pointer;
+}
+
+.trackPlayLike:hover svg,
+.trackPlayDislike:hover svg {
+  stroke: #acacac;
 }

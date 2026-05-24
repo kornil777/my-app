@@ -4,10 +4,10 @@
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { setCurrentTrack } from '@/store/features/trackSlice';
+import { useLikeTrack } from '@/hooks/useLikeTrack';
 import { TrackType } from '@/sharedTypes/types';
 import styles from './TrackItem.module.css';
 
-// Безопасное форматирование времени
 const formatDuration = (seconds?: number) => {
   if (!seconds || isNaN(seconds)) return '0:00';
   const mins = Math.floor(seconds / 60);
@@ -19,15 +19,19 @@ export default function TrackItem(track: TrackType) {
   const dispatch = useAppDispatch();
   const { currentTrack, isPlaying } = useAppSelector((state) => state.tracks);
   const isActive = currentTrack?._id === track._id && isPlaying;
+  const { isLike, toggleLike, isLoading } = useLikeTrack(track);
 
-  const handleClick = () => {
+  const handlePlayClick = () => {
     dispatch(setCurrentTrack(track));
-  
-};
+  };
 
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // ⬅️ предотвращает всплытие к родительскому div
+    toggleLike();
+  };
 
   return (
-    <div className={`${styles.playlistItem} ${isActive ? styles.activeTrack : ''}`} onClick={handleClick}>
+    <div className={`${styles.playlistItem} ${isActive ? styles.activeTrack : ''}`} onClick={handlePlayClick}>
       <div className={styles.playlistTrack}>
         <div className={styles.trackTitle}>
           <div className={styles.trackTitleImage}>
@@ -56,9 +60,14 @@ export default function TrackItem(track: TrackType) {
           </Link>
         </div>
         <div className={styles.trackTime}>
-          <svg className={styles.trackTimeSvg}>
-            <use href="/img/icon/sprite.svg#icon-like" />
-          </svg>
+          <div
+            className={`${styles.trackTimeLike} ${isLike ? styles.liked : ''} ${isLoading ? styles.loading : ''}`}
+            onClick={handleLikeClick}
+          >
+            <svg className={styles.trackTimeSvg}>
+              <use href="/img/icon/sprite.svg#icon-like" />
+            </svg>
+          </div>
           <span className={styles.trackTimeText}>{formatDuration(track.duration_in_seconds)}</span>
         </div>
       </div>

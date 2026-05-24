@@ -125,3 +125,11 @@
     opacity: 1;
   }
 }
+
+.trackTimeLike {
+  cursor: pointer;
+}
+.trackTimeLike.liked svg {
+  fill: #b672ff;
+  stroke: #b672ff;
+}

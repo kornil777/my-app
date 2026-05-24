@@ -141,6 +141,9 @@ export const refreshAccessToken = (refresh: string) =>
 export const getAllTracks = () => request<any>('/catalog/track/all/');
 export const getTrackById = (id: number): Promise<TrackType> =>
   request<{ success: boolean; data: TrackType }>(`/catalog/track/${id}/`).then(res => res.data);
+export const getFavoriteTracks = (): Promise<TrackType[]> =>
+  request<{ success: boolean; data: TrackType[] }>('/catalog/track/favorite/all/')
+    .then(res => res.data);
 
 // === Подборки ===
 export const getSelections = () => request<any>('/catalog/selection/all/').then(res => res.data);
@@ -148,3 +151,9 @@ export const getSelectionById = (id: number) =>
   request<{ success: boolean; data: { _id: number; name: string; items: number[]; owner: number[]; __v: number } | null }>(
     `/catalog/selection/${id}/`
   ).then(res => res.data);
+
+  export const addLike = (trackId: number) =>
+  request<{ success: boolean }>(`/catalog/track/${trackId}/favorite/`, { method: 'POST' });
+
+export const removeLike = (trackId: number) =>
+  request<{ success: boolean }>(`/catalog/track/${trackId}/favorite/`, { method: 'DELETE' });
