@@ -39,8 +39,9 @@ const initialState: SelectionsState = {
 
 // Загрузка всех подборок
 export const fetchSelections = createAsyncThunk('selections/fetchAll', async () => {
-  const selections = await getSelections();
-  return selections;
+  const selections = await getSelections(); // предполагаем, что getSelections возвращает Selection[]
+  // Типизируем параметр sel как Selection
+  return selections.filter((sel: Selection) => sel.items && sel.items.length > 0);
 });
 
 // Загрузка одной подборки с треками

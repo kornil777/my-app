@@ -37,6 +37,7 @@ const loadRefreshToken = () => {
   return localStorage.getItem('refresh');
 };
 
+
 const initialState: UserState = {
   user: loadUserFromStorage(),
   accessToken: loadAccessToken(),

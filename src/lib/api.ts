@@ -27,7 +27,6 @@ async function request<T>(
   retry = true
 ): Promise<T> {
   const url = `${BASE_URL}${endpoint}`;
-
   const headers = new Headers();
   headers.set('Content-Type', 'application/json');
   if (options.headers) {
@@ -35,8 +34,12 @@ async function request<T>(
     Object.entries(userHeaders).forEach(([key, value]) => headers.set(key, value));
   }
 
-  const state = store.getState();
-  const accessToken = state.user.accessToken;
+  let state = store.getState();
+  let accessToken = state.user.accessToken;
+  if (!accessToken && typeof window !== 'undefined') {
+    accessToken = localStorage.getItem('access');
+  }
+
   if (accessToken) {
     headers.set('Authorization', `Bearer ${accessToken}`);
   }
