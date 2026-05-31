@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { fetchSelectionById } from '@/store/features/selectionsSlice';
+import TrackFilters from '@/components/TrackFilters/TrackFilters';
 import TrackList from '@/components/Centerblock/TrackList';
+import { TrackType } from '@/sharedTypes/types';
 import styles from './page.module.css';
-import { setPlaylist } from '@/store/features/trackSlice';
 
 export default function SelectionPage() {
   const { id } = useParams();
@@ -15,11 +16,10 @@ export default function SelectionPage() {
   const { currentSelection } = useAppSelector((state) => state.selections);
   const { tracks, name, isLoading, error, id: loadedId } = currentSelection;
 
-  // --- Локальные состояния для фильтрации ---
-  const [filteredTracks, setFilteredTracks] = useState(tracks);
+  const [filteredTracks, setFilteredTracks] = useState<TrackType[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedAuthor, setSelectedAuthor] = useState<string | null>(null);
-  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<'default' | 'newest' | 'oldest'>('default');
   const [openFilter, setOpenFilter] = useState<'author' | 'year' | 'genre' | null>(null);
 
@@ -31,18 +31,11 @@ export default function SelectionPage() {
       dispatch(fetchSelectionById(selectionId));
     }
   }, [selectionId, loadedId, dispatch]);
-  useEffect(() => {
-    if (tracks.length) {
-      dispatch(setPlaylist(tracks));
-    }
-  }, [tracks, dispatch]);
 
-  // Применение фильтров и сортировки при изменении зависимостей
+  // Применение фильтров
   useEffect(() => {
     let result = [...tracks];
-    
 
-    // Фильтр по поиску
     if (searchQuery) {
       result = result.filter(
         (track) =>
@@ -51,17 +44,14 @@ export default function SelectionPage() {
       );
     }
 
-    // Фильтр по автору
-    if (selectedAuthor) {
-      result = result.filter((track) => track.author === selectedAuthor);
+    if (selectedAuthors.length) {
+      result = result.filter((track) => selectedAuthors.includes(track.author));
     }
 
-    // Фильтр по жанру
-    if (selectedGenre) {
-      result = result.filter((track) => track.genre.includes(selectedGenre));
+    if (selectedGenres.length) {
+      result = result.filter((track) => track.genre.some((g) => selectedGenres.includes(g)));
     }
 
-    // Сортировка по году
     if (sortOrder !== 'default') {
       result.sort((a, b) => {
         const dateA = new Date(a.release_date).getTime();
@@ -71,24 +61,26 @@ export default function SelectionPage() {
     }
 
     setFilteredTracks(result);
-  }, [tracks, searchQuery, selectedAuthor, selectedGenre, sortOrder]);
+  }, [tracks, searchQuery, selectedAuthors, selectedGenres, sortOrder]);
 
-  // Получение уникальных авторов и жанров из текущей подборки
   const uniqueAuthors = [...new Set(tracks.map((t) => t.author))];
   const uniqueGenres = [...new Set(tracks.flatMap((t) => t.genre))];
+  const hasActiveFilters = !!(selectedAuthors.length || selectedGenres.length || sortOrder !== 'default' || searchQuery);
 
   const toggleFilter = (filter: 'author' | 'year' | 'genre') => {
     setOpenFilter(openFilter === filter ? null : filter);
   };
 
   const handleSelectAuthor = (author: string) => {
-    setSelectedAuthor(selectedAuthor === author ? null : author);
-    setOpenFilter(null);
+    setSelectedAuthors((prev) =>
+      prev.includes(author) ? prev.filter((a) => a !== author) : [...prev, author]
+    );
   };
 
   const handleSelectGenre = (genre: string) => {
-    setSelectedGenre(selectedGenre === genre ? null : genre);
-    setOpenFilter(null);
+    setSelectedGenres((prev) =>
+      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
+    );
   };
 
   const handleSelectSort = (order: 'newest' | 'oldest') => {
@@ -98,8 +90,8 @@ export default function SelectionPage() {
 
   const resetFilters = () => {
     setSearchQuery('');
-    setSelectedAuthor(null);
-    setSelectedGenre(null);
+    setSelectedAuthors([]);
+    setSelectedGenres([]);
     setSortOrder('default');
   };
 
@@ -109,7 +101,6 @@ export default function SelectionPage() {
 
   return (
     <div className={styles.container}>
-      {/* Поиск */}
       <div className={styles.search}>
         <input
           type="text"
@@ -119,99 +110,24 @@ export default function SelectionPage() {
           className={styles.searchInput}
         />
       </div>
+
       <h1 className={styles.title}>{name}</h1>
 
-      
+      <TrackFilters
+        uniqueAuthors={uniqueAuthors}
+        uniqueGenres={uniqueGenres}
+        selectedAuthors={selectedAuthors}
+        selectedGenres={selectedGenres}
+        sortOrder={sortOrder}
+        openFilter={openFilter}
+        onToggleFilter={toggleFilter}
+        onSelectAuthor={handleSelectAuthor}
+        onSelectGenre={handleSelectGenre}
+        onSelectSort={handleSelectSort}
+        onResetFilters={resetFilters}
+        hasActiveFilters={hasActiveFilters}
+      />
 
-      {/* Блок фильтров */}
-      <div className={styles.filters}>
-        <div className={styles.filterTitle}>Искать по:</div>
-
-        {/* Фильтр по исполнителю */}
-        <div className={styles.filterWrapper}>
-          <button
-            className={`${styles.filterButton} ${selectedAuthor ? styles.active : ''}`}
-            onClick={() => toggleFilter('author')}
-          >
-            исполнителю
-          </button>
-          {openFilter === 'author' && (
-            <div className={styles.dropdown}>
-              {uniqueAuthors.map((author) => (
-                <div
-                  key={author}
-                  className={`${styles.dropdownItem} ${
-                    selectedAuthor === author ? styles.active : ''
-                  }`}
-                  onClick={() => handleSelectAuthor(author)}
-                >
-                  {author}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Фильтр по году */}
-        <div className={styles.filterWrapper}>
-          <button
-            className={`${styles.filterButton} ${sortOrder !== 'default' ? styles.active : ''}`}
-            onClick={() => toggleFilter('year')}
-          >
-            году выпуска
-          </button>
-          {openFilter === 'year' && (
-            <div className={styles.dropdown}>
-              <div
-                className={`${styles.dropdownItem} ${sortOrder === 'newest' ? styles.active : ''}`}
-                onClick={() => handleSelectSort('newest')}
-              >
-                Сначала новые
-              </div>
-              <div
-                className={`${styles.dropdownItem} ${sortOrder === 'oldest' ? styles.active : ''}`}
-                onClick={() => handleSelectSort('oldest')}
-              >
-                Сначала старые
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Фильтр по жанру */}
-        <div className={styles.filterWrapper}>
-          <button
-            className={`${styles.filterButton} ${selectedGenre ? styles.active : ''}`}
-            onClick={() => toggleFilter('genre')}
-          >
-            жанру
-          </button>
-          {openFilter === 'genre' && (
-            <div className={styles.dropdown}>
-              {uniqueGenres.map((genre) => (
-                <div
-                  key={genre}
-                  className={`${styles.dropdownItem} ${
-                    selectedGenre === genre ? styles.active : ''
-                  }`}
-                  onClick={() => handleSelectGenre(genre)}
-                >
-                  {genre}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Кнопка сброса фильтров */}
-        {(searchQuery || selectedAuthor || selectedGenre || sortOrder !== 'default') && (
-          <button className={styles.resetButton} onClick={resetFilters}>
-            Сбросить фильтры
-          </button>
-        )}
-      </div>
-
-      {/* Заголовки колонок */}
       <div className={styles.contentTitle}>
         <div className={`${styles.col} ${styles.col01}`}>Трек</div>
         <div className={`${styles.col} ${styles.col02}`}>Исполнитель</div>
@@ -222,8 +138,14 @@ export default function SelectionPage() {
           </svg>
         </div>
       </div>
+      {filteredTracks.length === 0 ? (
+  <div className={styles.noResults}>
+    К сожалению, по заданным фильтрам ничего не найдено
+  </div>
+) : (
+  <TrackList tracks={filteredTracks} />
+)}
 
-      {/* Список треков */}
       <TrackList tracks={filteredTracks} />
     </div>
   );
