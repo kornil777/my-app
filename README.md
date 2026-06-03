@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎵 Skypro.Music
 
-## Getting Started
+**Skypro.Music** – это веб-приложение музыкального плеера с возможностью прослушивания треков, создания плейлистов, лайков, фильтрации и авторизации. Проект выполнен в рамках курсовой работы и использует реальное API для получения музыки и управления пользователями.
 
-First, run the development server:
+## 🚀 Функциональность
 
-```bash
+- **Регистрация и авторизация** пользователей (JWT-токены, автоматическое обновление access‑токена)
+- **Прослушивание треков** с визуализацией прогресса, регулировкой громкости, управлением (play/pause, next/prev)
+- **Режимы воспроизведения:** перемешивание (shuffle), зацикливание одного трека (loop)
+- **Лайки (избранное):** возможность ставить лайки трекам – они сохраняются на сервере и отображаются на странице «Мой плейлист»
+- **Фильтрация треков:** по исполнителю (несколько), жанру (несколько), году выпуска (новые/старые), поиск по названию и исполнителю
+- **Подборки (плейлисты):** отображение в сайдбаре, переход на страницу подборки с собственной фильтрацией
+- **Адаптивный дизайн** (бургер-меню, скелетоны загрузки, кастомный скроллбар)
+- **Страница 404** с единым музыкальным layout
+
+## 🛠 Технологии
+
+- **Next.js 16** (App Router, клиентские компоненты, серверный редирект)
+- **TypeScript** – полная типизация
+- **Redux Toolkit** – глобальное состояние (треки, пользователь, подборки)
+- **Redux Thunk** – асинхронные запросы
+- **CSS Modules** – изолированная стилизация компонентов
+- **Jest + React Testing Library** – unit-тесты (3 компонента + утилиты)
+- **REST API** – взаимодействие с бэкендом (авторизация, треки, подборки, лайки)
+
+## 📦 Установка и запуск
+
+1. **Клонируйте репозиторий**
+   ```bash
+   git clone https://github.com/ваш-username/skypro-music.git
+   cd skypro-music/my-app
+   Установите зависимости
+
+bash
+npm install
+Запустите сервер разработки
+
+bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Приложение будет доступно по адресу http://localhost:3000
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Сборка для production
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+bash
+npm run build
+npm start
+🧪 Запуск тестов
+bash
+npm run test        # однократный запуск
+npm run test:watch  # режим наблюдения
+📁 Структура проекта (основные папки)
+text
+my-app/
+├── public/                # статика (лого, спрайт иконок, изображения)
+├── src/
+│   ├── app/               # маршрутизация Next.js
+│   │   ├── (auth)/        # страницы входа/регистрации
+│   │   ├── music/         # музыкальный раздел (layout, main, selection, playlist)
+│   │   └── layout.tsx     # корневой layout
+│   ├── components/        # переиспользуемые компоненты
+│   │   ├── Bar/           # плеер
+│   │   ├── Centerblock/   # центральный блок (фильтры + список треков)
+│   │   ├── Navigation/    # бургер-меню
+│   │   ├── Sidebar/       # правая панель (профиль, подборки)
+│   │   ├── TrackFilters/  # универсальные фильтры
+│   │   ├── Skeleton/      # анимированные скелетоны загрузки
+│   │   └── ProgressBar/   # ползунок прогресса
+│   ├── store/             # Redux store и слайсы
+│   ├── hooks/             # кастомные хуки (useLikeTrack, useClientOnly)
+│   ├── lib/               # API-клиент (все запросы к серверу)
+│   ├── sharedTypes/       # TypeScript интерфейсы
+│   └── utils/             # чистые функции (форматирование, фильтрация)
+├── jest.config.js         # конфигурация тестов
+├── tsconfig.json
+└── package.json
+🔗 API
+Проект использует развёрнутое API: https://webdev-music-003b5b991590.herokuapp.com/
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Основные эндпоинты:
 
-## Learn More
+/user/signup/ – регистрация
 
-To learn more about Next.js, take a look at the following resources:
+/user/login/ – вход
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+/user/token/refresh/ – обновление access-токена
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+/catalog/track/all/ – все треки
 
-## Deploy on Vercel
+/catalog/track/<id>/favorite/ – добавить/удалить лайк
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+/catalog/selection/all/ – список подборок
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+/catalog/selection/<id>/ – треки подборки
