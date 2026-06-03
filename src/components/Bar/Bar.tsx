@@ -4,9 +4,9 @@ import { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { setIsPlaying, nextTrack, prevTrack, setShuffle, setLoop } from '@/store/features/trackSlice';
-import ProgressBar from '@/components/ProgressBar/ProgressBar'; // компонент из задания
-import styles from './Bar.module.css';
 import { useLikeTrack } from '@/hooks/useLikeTrack';
+import ProgressBar from '@/components/ProgressBar/ProgressBar';
+import styles from './Bar.module.css';
 
 const formatTime = (seconds: number) => {
   if (isNaN(seconds)) return '0:00';
@@ -17,70 +17,67 @@ const formatTime = (seconds: number) => {
 
 export default function Bar() {
   const dispatch = useAppDispatch();
-  const { currentTrack, isPlaying, shuffle, loop, playlist, currentTrackIndex } = useAppSelector(
+  const { currentTrack, isPlaying, shuffle, loop, playlist } = useAppSelector(
     (state) => state.tracks
   );
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.5);
+
   const { isLike, toggleLike, isLoading: isLikeLoading } = useLikeTrack(currentTrack);
 
   // Загрузка трека при смене currentTrack
   useEffect(() => {
-  const audio = audioRef.current;
-  if (!audio || !currentTrack) return;
+    const audio = audioRef.current;
+    if (!audio || !currentTrack) return;
 
-  let isMounted = true;
-  audio.pause();
-  audio.src = currentTrack.track_file;
-  audio.load();
-  audio.volume = volume;
-
-  if (isPlaying && isMounted) {
-    audio.play().catch((err) => {
-      if (err.name !== 'AbortError') console.error('Play error:', err);
-    });
-  }
-
-  return () => {
-    isMounted = false;
+    let isMounted = true;
     audio.pause();
-  };
-}, [currentTrack]);
+    audio.src = currentTrack.track_file;
+    audio.load();
+    audio.volume = volume;
 
+    if (isPlaying && isMounted) {
+      audio.play().catch((err) => {
+        if (err.name !== 'AbortError') console.error('Play error:', err);
+      });
+    }
+
+    return () => {
+      isMounted = false;
+      audio.pause();
+    };
+  }, [currentTrack]);
 
   // Синхронизация play/pause
   useEffect(() => {
-  const audio = audioRef.current;
-  if (!audio || !currentTrack) return;
+    const audio = audioRef.current;
+    if (!audio || !currentTrack) return;
 
-  // Флаг, что компонент всё ещё смонтирован
-  let isMounted = true;
+    let isMounted = true;
 
-  const handlePlay = async () => {
-    if (isPlaying && isMounted) {
-      try {
-        await audio.play();
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          console.error('Play error:', err);
+    const handlePlay = async () => {
+      if (isPlaying && isMounted) {
+        try {
+          await audio.play();
+        } catch (err: any) {
+          if (err.name !== 'AbortError') {
+            console.error('Play error:', err);
+          }
         }
+      } else if (!isPlaying && isMounted) {
+        audio.pause();
       }
-    } else if (!isPlaying && isMounted) {
+    };
+
+    handlePlay();
+
+    return () => {
+      isMounted = false;
       audio.pause();
-    }
-  };
-  
-
-  handlePlay();
-
-  return () => {
-    isMounted = false;
-    // При размонтировании останавливаем аудио, чтобы не было лишних вызовов
-    audio.pause();
-  };
-}, [isPlaying, currentTrack]);
+    };
+  }, [isPlaying, currentTrack]);
 
   // Синхронизация громкости
   useEffect(() => {
@@ -95,15 +92,19 @@ export default function Bar() {
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
     const handleLoadedMetadata = () => setDuration(audio.duration);
     const handleEnded = () => {
-  if (loop) {
-    audioRef.current!.currentTime = 0;
-    audioRef.current!.play();
-  } else {
-    dispatch(nextTrack()); // теперь nextTrack сам остановит, если треков больше нет
-  }
-};
-    const handlePlay = () => { if (!isPlaying) dispatch(setIsPlaying(true)); };
-    const handlePause = () => { if (isPlaying) dispatch(setIsPlaying(false)); };
+      if (loop) {
+        audioRef.current!.currentTime = 0;
+        audioRef.current!.play();
+      } else {
+        dispatch(nextTrack());
+      }
+    };
+    const handlePlay = () => {
+      if (!isPlaying) dispatch(setIsPlaying(true));
+    };
+    const handlePause = () => {
+      if (isPlaying) dispatch(setIsPlaying(false));
+    };
 
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
@@ -135,16 +136,52 @@ export default function Bar() {
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVolume(Number(e.target.value));
   };
-   const handleLikeClick = (e: React.MouseEvent) => {
+
+  const handleLikeClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (currentTrack) toggleLike();
   };
 
+  // Скелетон, если нет текущего трека
   if (!currentTrack) {
-    return <div className={styles.bar}></div>;
+    return (
+      <div className={styles.bar}>
+        <div className={styles.barContent}>
+          <div className={styles.barPlayerProgress}></div>
+          <div className={styles.barPlayerBlock}>
+            <div className={styles.skeletonTrack}>
+              <div className={styles.skeletonCover}></div>
+              <div className={styles.skeletonInfo}>
+                <div className={styles.skeletonLine}></div>
+                <div className={styles.skeletonLineSmall}></div>
+              </div>
+            </div>
+            <div className={styles.barVolumeBlock}>
+              <div className={styles.volumeContent}>
+                <div className={styles.volumeImage}>
+                  <svg className={styles.volumeSvg}>
+                    <use href="/img/icon/sprite.svg#icon-volume" />
+                  </svg>
+                </div>
+                <div className={styles.volumeProgress}>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={volume}
+                    onChange={handleVolumeChange}
+                    className={styles.volumeProgressLine}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <audio ref={audioRef} />
+      </div>
+    );
   }
-
-  
 
   return (
     <div className={styles.bar}>
@@ -217,7 +254,6 @@ export default function Bar() {
                 </div>
               </div>
 
-              {/* Блок лайков в плеере */}
               <div className={styles.trackPlayLikeDis}>
                 <div
                   className={`${styles.trackPlayLike} btnIcon ${isLike ? styles.liked : ''}`}
@@ -227,14 +263,14 @@ export default function Bar() {
                     <use href="/img/icon/sprite.svg#icon-like" />
                   </svg>
                 </div>
-                {/* <div
+                <div
                   className={`${styles.trackPlayDislike} btnIcon`}
                   onClick={handleLikeClick}
                 >
                   <svg className={styles.trackPlayDislikeSvg}>
                     <use href="/img/icon/sprite.svg#icon-dislike" />
                   </svg>
-                </div> */}
+                </div>
               </div>
             </div>
 

@@ -74,3 +74,11 @@ a {
   align-items: center;
   justify-content: center;
 }
+@keyframes global-pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}
+.pulse-global {
+  animation: global-pulse 1.2s ease-in-out infinite;
+}

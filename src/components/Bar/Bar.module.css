@@ -258,3 +258,40 @@
 .trackPlayDislike:hover svg {
   stroke: #acacac;
 }
+
+.skeletonTrack {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.skeletonCover {
+  width: 51px;
+  height: 51px;
+  background-color: #2a2a2a;
+  border-radius: 6px;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.skeletonInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.skeletonLine {
+  width: 150px;
+  height: 16px;
+  background-color: #2a2a2a;
+  border-radius: 4px;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.skeletonLineSmall {
+  width: 100px;
+  height: 12px;
+  background-color: #2a2a2a;
+  border-radius: 4px;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}

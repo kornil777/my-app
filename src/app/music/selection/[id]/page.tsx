@@ -9,6 +9,7 @@ import TrackFilters from '@/components/TrackFilters/TrackFilters';
 import TrackList from '@/components/Centerblock/TrackList';
 import { TrackType } from '@/sharedTypes/types';
 import styles from './page.module.css';
+import Skeleton from '@/components/Skeleton/Skeleton';
 
 export default function SelectionPage() {
   const { id } = useParams();
@@ -99,7 +100,8 @@ export default function SelectionPage() {
   if (error) return <div className={styles.error}>{error}</div>;
   if (!tracks.length) return <div className={styles.error}>В этой подборке нет треков</div>;
 
-  return (
+  if (isLoading) 
+    {return (
     <div className={styles.container}>
       <div className={styles.search}>
         <input
@@ -149,4 +151,5 @@ export default function SelectionPage() {
       <TrackList tracks={filteredTracks} />
     </div>
   );
+}
 }

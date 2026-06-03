@@ -7,9 +7,11 @@ import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { fetchSelections } from '@/store/features/selectionsSlice';
 import { logout } from '@/store/features/userSlice';
+import Skeleton from '@/components/Skeleton/Skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
 import styles from './Sidebar.module.css';
 
+// Функция для выбора картинки в зависимости от id подборки
 const getCoverImage = (id: number): string => {
   switch (id) {
     case 2: return '/img/playlist01.png';
@@ -37,20 +39,20 @@ export default function Sidebar() {
     router.push('/');
   };
 
-  if (!isClient) {
-    // Сервер рендерит заглушку (пустую или скелетон), чтобы избежать расхождений
+  if (!isClient || isLoading) {
     return (
       <div className={styles.mainSidebar}>
         <div className={styles.sidebarPersonal}>
-          <p className={styles.sidebarPersonalName}> </p>
-          <div className={styles.sidebarIcon} />
+          <div className={styles.skeletonUser}></div>
         </div>
         <div className={styles.sidebarBlock}>
-          <div className={styles.sidebarList}>Загрузка...</div>
+          <Skeleton variant="sidebar-image" count={3} />
         </div>
       </div>
     );
   }
+
+  if (error) return <div className={styles.sidebarBlock}>Ошибка: {error}</div>;
 
   return (
     <div className={styles.mainSidebar}>
@@ -73,6 +75,7 @@ export default function Sidebar() {
                   alt={selection.name}
                   width={250}
                   height={170}
+                  loading="lazy"
                 />
               </Link>
             </div>

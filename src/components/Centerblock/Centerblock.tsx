@@ -7,6 +7,7 @@ import { fetchTracks } from '@/store/features/trackSlice';
 import { TrackType } from '@/sharedTypes/types';
 import TrackFilters from '@/components/TrackFilters/TrackFilters';
 import TrackList from './TrackList';
+import Skeleton from '@/components/Skeleton/Skeleton';
 import styles from './Centerblock.module.css';
 
 const getUniqueAuthors = (tracks: TrackType[]) => [...new Set(tracks.map(t => t.author))];
@@ -91,58 +92,74 @@ export default function Centerblock() {
   const uniqueGenres = getUniqueGenres(playlist);
   const hasActiveFilters = !!(selectedAuthors.length || selectedGenres.length || sortOrder !== 'default' || searchQuery);
 
-  return (
-  <div className={styles.centerblock}>
-    <div className={styles.centerblockSearch}>
-      <svg className={styles.searchSvg}>
-        <use href="/img/icon/sprite.svg#icon-search" />
-      </svg>
-      <input
-        className={styles.searchText}
-        type="search"
-        placeholder="Поиск"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-    </div>
-    <h2 className={styles.centerblockH2}>Треки</h2>
-
-    <TrackFilters
-      uniqueAuthors={uniqueAuthors}
-      uniqueGenres={uniqueGenres}
-      selectedAuthors={selectedAuthors}
-      selectedGenres={selectedGenres}
-      sortOrder={sortOrder}
-      openFilter={openFilter}
-      onToggleFilter={toggleFilter}
-      onSelectAuthor={handleSelectAuthor}
-      onSelectGenre={handleSelectGenre}
-      onSelectSort={handleSelectSort}
-      onResetFilters={resetFilters}
-      hasActiveFilters={!!(selectedAuthors.length || selectedGenres.length || sortOrder !== 'default' || searchQuery)}
-    />
-
-    <div className={styles.centerblockContent}>
-      {filteredTracks.length === 0 ? (
-        <div className={styles.noResults}>
-          К сожалению, по заданным фильтрам ничего не найдено
+  // Показываем скелетоны во время загрузки
+  if (isLoading && playlist.length === 0) {
+    return (
+      <div className={styles.centerblock}>
+        <div className={styles.centerblockSearch}>
+          <div className={styles.skeletonSearch}></div>
         </div>
-      ) : (
-        <>
-          <div className={styles.contentTitle}>
-            <div className={`${styles.playlistTitleCol} ${styles.col01}`}>Трек</div>
-            <div className={`${styles.playlistTitleCol} ${styles.col02}`}>Исполнитель</div>
-            <div className={`${styles.playlistTitleCol} ${styles.col03}`}>Альбом</div>
-            <div className={`${styles.playlistTitleCol} ${styles.col04}`}>
-              <svg className={styles.playlistTitleSvg}>
-                <use href="/img/icon/sprite.svg#icon-watch" />
-              </svg>
-            </div>
+        <div className={styles.skeletonTitle}></div>
+        <div className={styles.skeletonFilters}></div>
+        <div className={styles.centerblockContent}>
+          <Skeleton variant="track-row" count={6} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.centerblock}>
+      <div className={styles.centerblockSearch}>
+        <svg className={styles.searchSvg}>
+          <use href="/img/icon/sprite.svg#icon-search" />
+        </svg>
+        <input
+          className={styles.searchText}
+          type="search"
+          placeholder="Поиск"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+        />
+      </div>
+      <h2 className={styles.centerblockH2}>Треки</h2>
+
+      <TrackFilters
+        uniqueAuthors={uniqueAuthors}
+        uniqueGenres={uniqueGenres}
+        selectedAuthors={selectedAuthors}
+        selectedGenres={selectedGenres}
+        sortOrder={sortOrder}
+        openFilter={openFilter}
+        onToggleFilter={toggleFilter}
+        onSelectAuthor={handleSelectAuthor}
+        onSelectGenre={handleSelectGenre}
+        onSelectSort={handleSelectSort}
+        onResetFilters={resetFilters}
+        hasActiveFilters={hasActiveFilters}
+      />
+
+      <div className={styles.centerblockContent}>
+        {filteredTracks.length === 0 ? (
+          <div className={styles.noResults}>
+            К сожалению, по заданным фильтрам ничего не найдено
           </div>
-          <TrackList tracks={filteredTracks} />
-        </>
-      )}
+        ) : (
+          <>
+            <div className={styles.contentTitle}>
+              <div className={`${styles.playlistTitleCol} ${styles.col01}`}>Трек</div>
+              <div className={`${styles.playlistTitleCol} ${styles.col02}`}>Исполнитель</div>
+              <div className={`${styles.playlistTitleCol} ${styles.col03}`}>Альбом</div>
+              <div className={`${styles.playlistTitleCol} ${styles.col04}`}>
+                <svg className={styles.playlistTitleSvg}>
+                  <use href="/img/icon/sprite.svg#icon-watch" />
+                </svg>
+              </div>
+            </div>
+            <TrackList tracks={filteredTracks} />
+          </>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 }
