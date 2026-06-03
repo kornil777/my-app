@@ -48,31 +48,7 @@ npm start
 bash
 npm run test        # однократный запуск
 npm run test:watch  # режим наблюдения
-📁 Структура проекта (основные папки)
-text
-my-app/
-├── public/                # статика (лого, спрайт иконок, изображения)
-├── src/
-│   ├── app/               # маршрутизация Next.js
-│   │   ├── (auth)/        # страницы входа/регистрации
-│   │   ├── music/         # музыкальный раздел (layout, main, selection, playlist)
-│   │   └── layout.tsx     # корневой layout
-│   ├── components/        # переиспользуемые компоненты
-│   │   ├── Bar/           # плеер
-│   │   ├── Centerblock/   # центральный блок (фильтры + список треков)
-│   │   ├── Navigation/    # бургер-меню
-│   │   ├── Sidebar/       # правая панель (профиль, подборки)
-│   │   ├── TrackFilters/  # универсальные фильтры
-│   │   ├── Skeleton/      # анимированные скелетоны загрузки
-│   │   └── ProgressBar/   # ползунок прогресса
-│   ├── store/             # Redux store и слайсы
-│   ├── hooks/             # кастомные хуки (useLikeTrack, useClientOnly)
-│   ├── lib/               # API-клиент (все запросы к серверу)
-│   ├── sharedTypes/       # TypeScript интерфейсы
-│   └── utils/             # чистые функции (форматирование, фильтрация)
-├── jest.config.js         # конфигурация тестов
-├── tsconfig.json
-└── package.json
+
 🔗 API
 Проект использует развёрнутое API: https://webdev-music-003b5b991590.herokuapp.com/
 
