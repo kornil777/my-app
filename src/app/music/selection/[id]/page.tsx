@@ -26,14 +26,12 @@ export default function SelectionPage() {
 
   const selectionId = id ? parseInt(id as string, 10) : null;
 
-  // Загрузка подборки
   useEffect(() => {
     if (selectionId && loadedId !== selectionId) {
       dispatch(fetchSelectionById(selectionId));
     }
   }, [selectionId, loadedId, dispatch]);
 
-  // Применение фильтров
   useEffect(() => {
     let result = [...tracks];
 
@@ -96,12 +94,27 @@ export default function SelectionPage() {
     setSortOrder('default');
   };
 
-  if (isLoading) return <div className={styles.loader}>Загрузка подборки...</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
-  if (!tracks.length) return <div className={styles.error}>В этой подборке нет треков</div>;
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.search}>
+          <div className={styles.searchInputSkeleton}></div>
+        </div>
+        <div className={styles.skeletonTitle}></div>
+        <Skeleton variant="track-row" count={5} />
+      </div>
+    );
+  }
 
-  if (isLoading) 
-    {return (
+  if (error) {
+    return <div className={styles.error}>{error}</div>;
+  }
+
+  if (!tracks.length) {
+    return <div className={styles.error}>В этой подборке нет треков</div>;
+  }
+
+  return (
     <div className={styles.container}>
       <div className={styles.search}>
         <input
@@ -140,16 +153,14 @@ export default function SelectionPage() {
           </svg>
         </div>
       </div>
-      {filteredTracks.length === 0 ? (
-  <div className={styles.noResults}>
-    К сожалению, по заданным фильтрам ничего не найдено
-  </div>
-) : (
-  <TrackList tracks={filteredTracks} />
-)}
 
-      <TrackList tracks={filteredTracks} />
+      {filteredTracks.length === 0 ? (
+        <div className={styles.noResults}>
+          К сожалению, по заданным фильтрам ничего не найдено
+        </div>
+      ) : (
+        <TrackList tracks={filteredTracks} />
+      )}
     </div>
   );
-}
 }

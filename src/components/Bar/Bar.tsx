@@ -267,9 +267,9 @@ export default function Bar() {
                   className={`${styles.trackPlayDislike} btnIcon`}
                   onClick={handleLikeClick}
                 >
-                  <svg className={styles.trackPlayDislikeSvg}>
+                  {/* <svg className={styles.trackPlayDislikeSvg}>
                     <use href="/img/icon/sprite.svg#icon-dislike" />
-                  </svg>
+                  </svg> */}
                 </div>
               </div>
             </div>

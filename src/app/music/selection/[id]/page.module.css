@@ -97,3 +97,24 @@
   border-radius: 12px;
   margin-top: 20px;
 }
+
+.searchInputSkeleton {
+  width: 100%;
+  height: 48px;
+  background-color: #2a2a2a;
+  border-radius: 4px;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.skeletonTitle {
+  width: 300px;
+  height: 64px;
+  background-color: #2a2a2a;
+  margin-bottom: 45px;
+  border-radius: 8px;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}
