@@ -1,0 +1,54 @@
+.container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #181818;
+  min-height: 100vh; /* компенсируем высоту плеера (73px) */
+}
+
+.content {
+  width: 431px;
+  text-align: center;
+}
+
+.code {
+  font-size: 160px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  line-height: 1;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 400;
+  color: white;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.description {
+  font-size: 18px;
+  color: #4e4e4e;
+  margin-bottom: 40px;
+}
+
+.button {
+  display: inline-block;
+  width: 278px;
+  height: 52px;
+  background-color: #580ea2;
+  border-radius: 6px;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 52px;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+
+.button:hover {
+  background-color: #3f007d;
+}

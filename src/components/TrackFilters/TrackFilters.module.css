@@ -1,0 +1,120 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 51px;
+  color: white;
+  position: relative;
+}
+
+.filterTitle {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  margin-right: 5px;
+}
+
+.filterWrapper {
+  position: relative;
+}
+
+.filterButton {
+  position: relative;
+  background: transparent;
+  border: 1px solid white;
+  border-radius: 60px;
+  padding: 6px 20px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterButton.active {
+  border-color: #ad61ff;
+  color: #ad61ff;
+}
+
+.filterBadge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  background-color: #ad61ff;
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 26px;
+  padding: 0 5px;
+  line-height: 1;
+  box-shadow: 0 0 0 1px #181818;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background-color: #313131;
+  border-radius: 12px;
+  min-width: 180px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff #4b4949;
+}
+
+.dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown::-webkit-scrollbar-track {
+  background: #4b4949;
+  border-radius: 3px;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 3px;
+}
+
+.dropdown::-webkit-scrollbar-button {
+  display: none;
+}
+
+.dropdownItem {
+  padding: 10px 16px;
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dropdownItem:hover {
+  background: #4e4e4e;
+}
+
+.dropdownItem.active {
+  color: #ad61ff;
+  text-decoration: underline;
+  background: #4e4e4e;
+}
+
+.resetButton {
+  background: transparent;
+  border: none;
+  color: #ad61ff;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+  margin-left: 10px;
+}
