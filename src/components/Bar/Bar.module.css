@@ -1,0 +1,241 @@
+
+.bar {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(28, 28, 28, 0.5);
+  z-index: 100;
+}
+
+.barContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.barPlayerProgress {
+  width: 100%;
+  height: 5px;
+  background: #2e2e2e;
+}
+
+
+.barPlayerBlock {
+  height: 73px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.barPlayer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.barVolumeBlock {
+  width: auto;
+  display: flex;
+  align-items: center;
+  padding: 0 92px 0 0;
+}
+
+.playerControls {
+  display: flex;
+  padding: 0 27px 0 31px;
+}
+
+.playerBtnPrev,
+.playerBtnPlay,
+.playerBtnNext,
+.playerBtnRepeat,
+.playerBtnShuffle {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.playerBtnPrev { margin-right: 23px; }
+.playerBtnPrevSvg { width: 15px; height: 14px; }
+
+.playerBtnPlay { margin-right: 23px; }
+.playerBtnPlaySvg { width: 22px; height: 20px; fill: #d9d9d9; }
+
+.playerBtnNext { margin-right: 28px; fill: #a53939; }
+.playerBtnNextSvg { width: 15px; height: 14px; fill: inherit; stroke: #d9d9d9; }
+
+.playerBtnRepeat { margin-right: 24px; }
+.playerBtnRepeatSvg { width: 18px; height: 12px; fill: transparent; stroke: #696969; }
+
+.playerBtnShuffleSvg { width: 19px; height: 12px; fill: transparent; stroke: #696969; }
+
+.playerTrackPlay {
+  display: flex;
+}
+
+.trackPlayContain {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: 'image author' 'image album';
+  align-items: center;
+}
+
+.trackPlayImage {
+  width: 51px;
+  height: 51px;
+  background-color: #313131;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  grid-area: image;
+}
+
+.trackPlaySvg {
+  width: 18px;
+  height: 17px;
+  fill: transparent;
+  stroke: #4e4e4e;
+}
+
+.trackPlayAuthor {
+  grid-area: author;
+  min-width: 49px;
+}
+
+.trackPlayAuthorLink {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.trackPlayAlbum {
+  grid-area: album;
+  min-width: 49px;
+}
+
+.trackPlayAlbumLink {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 24px;
+  color: #ffffff;
+}
+
+.trackPlayDislike {
+  display: flex;
+  align-items: center;
+  margin-left: 26%;
+}
+
+.trackPlayLikeSvg {
+  width: 14px;
+  height: 12px;
+  fill: transparent;
+  stroke: #696969;
+}
+
+.trackPlayDislikeSvg {
+  width: 14.34px;
+  height: 13px;
+  fill: transparent;
+  stroke: #696969;
+}
+
+.volumeContent {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.volumeImage {
+  width: 13px;
+  height: 18px;
+  margin-right: 17px;
+}
+
+.volumeSvg {
+  width: 13px;
+  height: 18px;
+  fill: transparent;
+}
+
+.volumeProgress {
+  width: 109px;
+  display: flex;
+  align-items: center;
+}
+
+.volumeProgressLine {
+  width: 100%;
+  height: 2px;
+  appearance: none;
+  background: #797979;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+
+.volumeProgressLine::-webkit-slider-runnable-track {
+  height: 2px;
+  background: #797979;
+  border-radius: 5px;
+}
+
+.volumeProgressLine::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #1a1a1a;
+  border: 2px solid white;
+  border-radius: 50%;
+  margin-top: -7px;
+}
+
+.barPlayerProgress {
+  width: 100%;
+  height: 5px;
+  background: #2e2e2e;
+  appearance: none;
+  cursor: pointer;
+}
+
+.barPlayerProgress::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+}
+.playerBtnRepeat.active svg,
+.playerBtnShuffle.active svg {
+  stroke: white;
+  fill: white;
+}
+
+.barTime {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: white;
+  font-size: 14px;
+  margin-left: 20px;
+}
+
+
+.volumeProgressLine {
+  width: 100px;
+  height: 4px;
+  -webkit-appearance: none;
+  background: #2e2e2e;
+  border-radius: 2px;
+  outline: none;
+}
+.volumeProgressLine::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
