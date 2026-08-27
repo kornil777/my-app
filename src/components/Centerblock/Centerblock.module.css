@@ -1,0 +1,176 @@
+.centerblock {
+  flex: 1;
+  min-width: 0;
+  padding: 20px 40px 20px 40px;
+}
+
+.centerblockSearch {
+  width: 100%;
+  border-bottom: 1px solid #4e4e4e;
+  margin-bottom: 51px;
+  display: flex;
+  align-items: center;
+}
+
+.searchSvg {
+  width: 17px;
+  height: 17px;
+  margin-right: 5px;
+  stroke: #ffffff;
+  fill: transparent;
+}
+
+.searchText {
+  flex-grow: 100;
+  background-color: transparent;
+  border: none;
+  padding: 13px 10px 14px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #ffffff;
+}
+
+.searchText::placeholder {
+  color: #ffffff;
+}
+
+.centerblockH2 {
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 72px;
+  letter-spacing: -0.8px;
+  margin-bottom: 45px;
+  color: white;
+}
+
+.centerblockFilter {
+  display: flex;
+  align-items: center;
+  margin-bottom: 51px;
+  color: white;
+}
+
+.filterTitle {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  margin-right: 15px;
+}
+
+.filterButton {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  border: 1px solid #ffffff;
+  border-radius: 60px;
+  padding: 6px 20px;
+  cursor: pointer;
+}
+
+.filterButton:not(:last-child) {
+  margin-right: 10px;
+}
+
+.centerblockContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.contentTitle {
+  display: flex;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.playlistTitleCol {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 2px;
+  color: #696969;
+  text-transform: uppercase;
+}
+
+.playlistTitleSvg {
+  width: 12px;
+  height: 12px;
+  fill: transparent;
+  stroke: #696969;
+}
+
+.col01 { flex: 4; }
+.col02 { flex: 3; }
+.col03 { flex: 2; }
+.col04 { flex: 1; text-align: end; }
+
+.filterWrapper {
+  position: relative;
+}
+
+.filterButton {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  border: 1px solid #ffffff;
+  border-radius: 60px;
+  padding: 6px 20px;
+  cursor: pointer;
+  background: transparent;
+  color: white;
+  transition: all 0.2s;
+}
+
+.filterButton:not(:last-child) {
+  margin-right: 10px;
+}
+
+.filterButtonActive {
+  border-color: #ad61ff;
+  color: #ad61ff;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background-color: #313131;
+  border-radius: 12px;
+  min-width: 180px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dropdownItem {
+  padding: 10px 16px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.dropdownItem:hover {
+  background-color: #4e4e4e;
+}
+
+.dropdownItem.active {
+  color: #ad61ff;
+  text-decoration: underline;
+}
+
+.resetButton {
+  margin-left: 20px;
+  background: transparent;
+  border: none;
+  color: #ad61ff;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.resetButton:hover {
+  color: #d9b6ff;
+}
